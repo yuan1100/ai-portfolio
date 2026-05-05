@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Financial Audit Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --bg-elevated: rgba(0,0,0,.02);
+    --bg-card: rgba(255,255,255,.92);
+    --border: rgba(0,0,0,.07);
+    --border-hover: rgba(0,0,0,.15);
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --teal: #00b894;
+    --blue: #0984e3;
+    --purple: #6c5ce7;
+    --coral: #e17055;
+    --amber: #f5a623;
+    --cyan: #00cec9;
+    --red: #e74c3c;
+    --green: #27ae60;
+    --teal-bg: rgba(0,184,148,.08);
+    --blue-bg: rgba(9,132,227,.08);
+    --purple-bg: rgba(108,92,231,.08);
+    --coral-bg: rgba(225,112,85,.08);
+    --red-bg: rgba(231,76,60,.08);
+    --amber-bg: rgba(245,166,35,.08);
+    --green-bg: rgba(39,174,96,.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #particle-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .gradient-bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse at 15% 0%, rgba(0,184,148,.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 100%, rgba(9,132,227,.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(108,92,231,.03) 0%, transparent 50%);
+  }
+  .grid-bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .container { position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 32px; }
+
+  .nav-dots { position:fixed; right:28px; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:14px; }
+  .nav-dot { width:10px; height:10px; border-radius:50%; background:rgba(0,0,0,.12); transition:all .4s cubic-bezier(.25,.46,.45,.94); cursor:pointer; position:relative; }
+  .nav-dot.active { background:var(--teal); box-shadow:0 0 12px rgba(0,184,148,.4); transform:scale(1.3); }
+  .nav-dot::after { content:attr(data-label); position:absolute; right:22px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--text-muted); white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; }
+  .nav-dot:hover::after { opacity:1; }
+
+  header { text-align:center; padding:80px 0 64px; }
+  .badge { display:inline-flex; align-items:center; gap:8px; background:var(--teal-bg); border:1px solid rgba(0,184,148,.25); color:var(--teal); font-size:12px; font-weight:600; padding:6px 18px; border-radius:24px; margin-bottom:28px; letter-spacing:1px; text-transform:uppercase; }
+  .badge i { font-size:10px; }
+  header h1 { font-size:44px; font-weight:900; line-height:1.1; letter-spacing:-1.5px; margin-bottom:18px; background:linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  header .subtitle { font-size:17px; font-weight:400; color:var(--text-secondary); line-height:1.6; max-width:640px; margin:0 auto 40px; }
+  .quote-row { display:flex; justify-content:center; gap:0; flex-wrap:wrap; }
+  .quote-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:20px 24px; max-width:340px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.04); transition:all .3s; }
+  .quote-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color:var(--border-hover); }
+  .quote-card .qc-icon { font-size:24px; margin-bottom:10px; }
+  .quote-card .qc-text { font-size:13px; color:var(--text-secondary); line-height:1.7; font-style:italic; }
+
+  section { margin-bottom:80px; }
+  .section-header { display:flex; align-items:center; gap:16px; margin-bottom:8px; }
+  .section-num { font-size:12px; font-weight:700; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; }
+  .section-line { flex:1; height:1px; background:var(--border); }
+  .section-title { font-size:26px; font-weight:800; letter-spacing:-.5px; color:var(--text-primary); margin-bottom:6px; }
+  .section-sub { font-size:14px; color:var(--text-muted); margin-bottom:32px; line-height:1.6; }
+
+  .problem-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+  .problem-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px 24px; transition:all .35s cubic-bezier(.25,.46,.45,.94); position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .problem-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; opacity:0; transition:opacity .35s; }
+  .problem-card:hover { transform:translateY(-6px); border-color:var(--border-hover); background:#fff; box-shadow:0 16px 48px rgba(0,0,0,.1); }
+  .problem-card:hover::before { opacity:1; }
+  .problem-card.pc-coral::before { background:linear-gradient(90deg, var(--coral), transparent 80%); }
+  .problem-card.pc-purple::before { background:linear-gradient(90deg, var(--purple), transparent 80%); }
+  .problem-card.pc-amber::before { background:linear-gradient(90deg, var(--amber), transparent 80%); }
+  .pc-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:18px; }
+  .pc-icon.coral { background:var(--coral-bg); color:var(--coral); }
+  .pc-icon.purple { background:var(--purple-bg); color:var(--purple); }
+  .pc-icon.amber { background:var(--amber-bg); color:var(--amber); }
+  .problem-card h3 { font-size:17px; font-weight:700; color:var(--text-primary); margin-bottom:10px; }
+  .problem-card p { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+  .problem-card p strong { color:var(--text-primary); font-weight:500; }
+
+  .arch-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px; }
+  .arch-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; transition:all .35s cubic-bezier(.25,.46,.45,.94); position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .arch-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; opacity:0; transition:opacity .35s; }
+  .arch-card:hover { transform:translateY(-4px); border-color:var(--border-hover); background:#fff; box-shadow:0 16px 48px rgba(0,0,0,.1); }
+  .arch-card:hover::before { opacity:1; }
+  .arch-card.ac-teal::before { background:linear-gradient(90deg, var(--teal), transparent); }
+  .arch-card.ac-blue::before { background:linear-gradient(90deg, var(--blue), transparent); }
+  .arch-card.ac-purple::before { background:linear-gradient(90deg, var(--purple), transparent); }
+  .arch-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .arch-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; color:#fff; }
+  .arch-icon.ai-teal { background:linear-gradient(135deg, var(--teal), var(--cyan)); }
+  .arch-icon.ai-blue { background:linear-gradient(135deg, var(--blue), #6db3f8); }
+  .arch-icon.ai-purple { background:linear-gradient(135deg, var(--purple), #a99bfa); }
+  .arch-info h3 { font-size:16px; font-weight:700; color:var(--text-primary); }
+  .arch-info .a-sub { font-size:11px; color:var(--text-muted); margin-top:2px; text-transform:uppercase; letter-spacing:.5px; font-weight:500; }
+  .arch-card .a-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+  .arch-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:16px; }
+  .as-cell { text-align:center; padding:14px 8px; border-radius:10px; background:rgba(0,0,0,.02); border:1px solid rgba(0,0,0,.04); transition:all .25s; }
+  .as-cell:hover { background:rgba(0,0,0,.04); }
+  .as-cell .as-num { font-size:22px; font-weight:800; }
+  .as-cell .as-num.teal { color:var(--teal); }
+  .as-cell .as-num.blue { color:var(--blue); }
+  .as-cell .as-num.purple { color:var(--purple); }
+  .as-cell .as-label { font-size:10px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:.3px; font-weight:500; }
+
+  .flow-visual { display:flex; align-items:center; justify-content:center; gap:12px; padding:20px 24px; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; flex-wrap:wrap; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .fv-step { display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 20px; border-radius:10px; transition:all .25s; cursor:default; }
+  .fv-step:hover { transform:translateY(-2px); }
+  .fv-step .fv-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .fv-step .fv-text { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.3px; }
+  .fv-step .fv-sub { font-size:10px; color:var(--text-muted); }
+  .fv-arrow { color:rgba(0,0,0,.15); font-size:14px; }
+
+  .pillar-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .pillar-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all .3s; box-shadow:0 1px 3px rgba(0,0,0,.04); text-align:center; }
+  .pillar-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color:var(--border-hover); }
+  .pillar-card .pl-dot { width:8px; height:8px; border-radius:50%; margin:0 auto 12px; }
+  .pillar-card .pl-title { font-size:14px; font-weight:700; margin-bottom:6px; }
+  .pillar-card .pl-desc { font-size:12px; color:var(--text-secondary); line-height:1.6; }
+
+  .steps-timeline { position:relative; padding-left:32px; }
+  .steps-timeline::before { content:''; position:absolute; left:14px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, var(--teal), var(--blue), var(--purple)); border-radius:1px; }
+  .step-item { position:relative; margin-bottom:20px; padding:18px 22px; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; transition:all .3s; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .step-item:hover { transform:translateX(4px); border-color:var(--border-hover); box-shadow:0 6px 20px rgba(0,0,0,.08); }
+  .step-item::before { content:''; position:absolute; left:-25px; top:22px; width:10px; height:10px; border-radius:50%; border:2px solid var(--bg); }
+  .step-item.s1::before { background:var(--teal); }
+  .step-item.s2::before { background:#0ea5e9; }
+  .step-item.s3::before { background:var(--blue); }
+  .step-item.s4::before { background:#8b5cf6; }
+  .step-item.s5::before { background:var(--purple); }
+  .step-item.s6::before { background:var(--coral); }
+  .step-head { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+  .step-num { font-size:11px; font-weight:800; padding:3px 10px; border-radius:6px; color:#fff; }
+  .s1 .step-num { background:var(--teal); }
+  .s2 .step-num { background:#0ea5e9; }
+  .s3 .step-num { background:var(--blue); }
+  .s4 .step-num { background:#8b5cf6; }
+  .s5 .step-num { background:var(--purple); }
+  .s6 .step-num { background:var(--coral); }
+  .step-head h4 { font-size:15px; font-weight:700; color:var(--text-primary); }
+  .step-head .s-tag { font-size:10px; font-weight:600; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:.3px; margin-left:auto; }
+  .step-head .s-tag.cn { background:var(--teal-bg); color:var(--teal); }
+  .step-head .s-tag.calc { background:var(--blue-bg); color:var(--blue); }
+  .step-head .s-tag.rag { background:var(--purple-bg); color:var(--purple); }
+  .step-head .s-tag.judge { background:var(--coral-bg); color:var(--coral); }
+  .step-item .s-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+
+  .red-light-section { margin-top:28px; }
+  .red-light-box { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .red-light-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--red), var(--amber), var(--red)); }
+  .red-light-box h3 { font-size:17px; font-weight:700; color:var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .red-light-box h3 i { color:var(--red); }
+  .rule-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .rule-item { display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:rgba(0,0,0,.02); border-radius:8px; border:1px solid rgba(0,0,0,.03); transition:all .2s; }
+  .rule-item:hover { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.06); }
+  .rule-item .ri-dot { width:6px; height:6px; border-radius:50%; background:var(--red); margin-top:6px; flex-shrink:0; }
+  .rule-item .ri-text { font-size:12px; color:var(--text-secondary); line-height:1.5; }
+  .rule-item .ri-text strong { color:var(--text-primary); font-weight:500; }
+
+  .value-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .value-main { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .value-main::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--teal), var(--blue)); }
+  .value-main h3 { font-size:17px; font-weight:700; color:var(--text-primary); margin-bottom:16px; }
+  .transfer-list { list-style:none; }
+  .transfer-list li { font-size:13px; color:var(--text-secondary); padding:8px 0 8px 24px; position:relative; line-height:1.6; }
+  .transfer-list li::before { content:'\f105'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; left:0; font-size:12px; color:var(--teal); }
+  .transfer-list li strong { color:var(--text-primary); font-weight:600; }
+
+  .use-case-stack { display:flex; flex-direction:column; gap:14px; }
+  .use-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:20px; transition:all .3s; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .use-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color:var(--border-hover); }
+  .use-card .uc-head { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+  .use-card .uc-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .use-card .uc-head h4 { font-size:14px; font-weight:700; color:var(--text-primary); }
+  .use-card .uc-desc { font-size:12px; color:var(--text-secondary); line-height:1.6; }
+
+  .insight-box { margin-top:28px; background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; text-align:center; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .insight-box::before { content:''; position:absolute; bottom:0; left:20%; right:20%; height:1px; background:linear-gradient(90deg, transparent, var(--teal), var(--blue), transparent); }
+  .insight-box .insight-text { font-size:20px; font-weight:700; color:var(--text-primary); line-height:1.6; }
+  .insight-box .insight-text .hl { background:linear-gradient(135deg, var(--teal), var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .insight-box .insight-sub { font-size:13px; color:var(--text-muted); margin-top:10px; }
+
+  footer { text-align:center; padding:48px 0 32px; border-top:1px solid var(--border); margin-top:20px; }
+  footer p { font-size:12px; color:var(--text-muted); }
+  footer .logo-text { font-size:16px; font-weight:800; letter-spacing:-.5px; margin-bottom:8px; background:linear-gradient(135deg, var(--teal), var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:all .8s cubic-bezier(.16,1,.3,1); }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:.1s; }
+  .reveal-delay-2 { transition-delay:.2s; }
+  .reveal-delay-3 { transition-delay:.3s; }
+
+  @media (max-width:900px) {
+    .nav-dots { display:none; }
+    header h1 { font-size:30px; }
+    .problem-grid, .arch-layout, .value-layout, .rule-grid { grid-template-columns:1fr; }
+    .pillar-row { grid-template-columns:1fr; }
+    .container { padding:0 20px; }
+    section { margin-bottom:56px; }
+    header { padding:56px 0 48px; }
+    .quote-row { flex-direction:column; align-items:center; }
+    .steps-timeline { padding-left:24px; }
+    .steps-timeline::before { left:10px; }
+    .step-item::before { left:-21px; }
+  }
+  @media (max-width:480px) {
+    header h1 { font-size:24px; }
+    .arch-stats { grid-template-columns:1fr; }
+  }
+
+  /* ===== TOP NAV BAR ===== */
+  .top-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    height: 52px;
+    background: rgba(248,250,252,.85);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+    transition: box-shadow .3s;
+  }
+  .top-bar.scrolled { box-shadow: 0 1px 10px rgba(0,0,0,.06); }
+  .top-bar-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 15px; color: #1a1a2e;
+    text-decoration: none;
+  }
+  .top-bar-logo i {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, #00b894, #0984e3);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px;
+  }
+  .top-bar-links { display: flex; align-items: center; gap: 4px; }
+  .top-bar-links a {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 14px; border-radius: 7px;
+    font-size: 12px; font-weight: 500; color: #4a5568;
+    text-decoration: none; transition: all .2s;
+  }
+  .top-bar-links a:hover { background: rgba(0,184,148,.08); color: #00b894; }
+  .top-bar-links a.active { background: rgba(0,184,148,.1); color: #00b894; font-weight: 600; }
+  .top-bar-links a i { font-size: 11px; }
+  .top-bar-burger {
+    display: none; background: none; border: none; cursor: pointer;
+    width: 32px; height: 32px; border-radius: 7px;
+    align-items: center; justify-content: center;
+    color: #4a5568; font-size: 16px;
+  }
+  @media (max-width: 600px) {
+    .top-bar-links {
+      display: none; position: absolute; top: 52px; left: 0; right: 0;
+      background: rgba(248,250,252,.96); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      flex-direction: column; padding: 8px 20px 12px; gap: 2px;
+    }
+    .top-bar-links.open { display: flex; }
+    .top-bar-links a { padding: 8px 12px; font-size: 13px; }
+    .top-bar-burger { display: flex; }
+  }
+
+  /* Offset body content for top bar */
+  header { padding-top: 120px !important; }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV BAR ===== -->
+<nav class="top-bar" id="topBar">
+  <a href="index.html" class="top-bar-logo">
+    <i class="fas fa-bolt"></i>
+    <span>Fang's AI Lab</span>
+  </a>
+  <div class="top-bar-links">
+    <a href="index.html"><i class="fas fa-layer-group"></i> Home</a>
+    <a href="pdc-agent-vision.html"><i class="fas fa-robot"></i> PDC + AI</a>
+    <a href="financial-audit-agent-en.html" class="active"><i class="fas fa-shield-halved"></i> Audit Agent</a>
+  </div>
+  <button class="top-bar-burger" id="topBurger" aria-label="Menu"><i class="fas fa-bars"></i></button>
+</nav>
+
+<canvas id="particle-canvas"></canvas>
+<div class="gradient-bg"></div>
+<div class="grid-bg"></div>
+
+<nav class="nav-dots" id="navDots">
+  <div class="nav-dot active" data-label="Overview" data-section="header"></div>
+  <div class="nav-dot" data-label="The Problem" data-section="sec-problem"></div>
+  <div class="nav-dot" data-label="Architecture" data-section="sec-arch"></div>
+  <div class="nav-dot" data-label="Features" data-section="sec-features"></div>
+  <div class="nav-dot" data-label="Value" data-section="sec-value"></div>
+</nav>
+
+<div class="container">
+
+  <!-- ============ HEADER ============ -->
+  <header id="header">
+    <div class="reveal">
+      <div class="badge"><i class="fa-solid fa-shield-halved"></i>&nbsp; Portfolio Showcase</div>
+      <h1>AI Financial Statement<br>Audit Agent</h1>
+      <p class="subtitle">A project that teaches an AI to "read financial reports like an expert" — turning 20 years of investing wisdom into an automated checking engine.</p>
+    </div>
+    <div class="reveal reveal-delay-1">
+      <div class="quote-row">
+        <div class="quote-card">
+          <div class="qc-icon" style="color:var(--teal)"><i class="fa-solid fa-filter"></i></div>
+          <div class="qc-text">"Financial reports are for <strong>eliminating</strong> bad companies,<br>not for picking winners."</div>
+        </div>
+        <div class="quote-card">
+          <div class="qc-icon" style="color:var(--blue)"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div class="qc-text">"Reports can only <strong>prove something wrong</strong>,<br>not prove something right."</div>
+        </div>
+        <div class="quote-card">
+          <div class="qc-icon" style="color:var(--purple)"><i class="fa-solid fa-check-double"></i></div>
+          <div class="qc-text">"Only invest in companies where profits are <strong>real, lasting,<br>and don't require tons of money to maintain</strong>."</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ PART 1: THE PROBLEM ============ -->
+  <section id="sec-problem">
+    <div class="reveal">
+      <div class="section-header">
+        <span class="section-num">01 &mdash; The Problem</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">Why Build This?</h2>
+      <p class="section-sub">The core problem: too much information, complex logic, and it takes humans months to learn how to "spot trouble at a glance" when reading financial reports.</p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="problem-card pc-coral reveal reveal-delay-1">
+        <div class="pc-icon coral"><i class="fa-solid fa-layer-group"></i></div>
+        <h3>Too Much Information</h3>
+        <p>A single annual report can be <strong>200+ pages</strong>. Balance sheets, income statements, cash flow statements, footnotes — every number could hide accounting tricks. Reading it all takes <strong>days or even weeks</strong>, and it's easy to miss critical red flags.</p>
+      </div>
+      <div class="problem-card pc-purple reveal reveal-delay-2">
+        <div class="pc-icon purple"><i class="fa-solid fa-diagram-project"></i></div>
+        <h3>Logic Is Complicated</h3>
+        <p>Receivables vs. revenue growth, profit margins vs. industry average, cash flow vs. net profit — you need to <strong>cross-check multiple tables</strong> and understand accounting rules. It's not a simple checklist; it's a <strong>chain of reasoning</strong>.</p>
+      </div>
+      <div class="problem-card pc-amber reveal reveal-delay-3">
+        <div class="pc-icon amber"><i class="fa-solid fa-clock"></i></div>
+        <h3>Takes Too Long to Learn</h3>
+        <p>It took the investing mentor <strong>20 years</strong> to build his "problem checklist". Even after reading his books, a normal person needs <strong>dozens of practice reports</strong> to build intuition. <strong>Can AI do 80% of this grunt work for me?</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 2: HOW IT WORKS ============ -->
+  <section id="sec-arch">
+    <div class="reveal">
+      <div class="section-header">
+        <span class="section-num">02 &mdash; Architecture</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">How Does It Work?</h2>
+      <p class="section-sub">Three layers: Data (chop the books into pieces), Logic (store rules so AI can search them), Interaction (let AI search the knowledge base before answering).</p>
+    </div>
+
+    <div class="arch-layout">
+      <div class="arch-card ac-teal reveal reveal-delay-1">
+        <div class="arch-head">
+          <div class="arch-icon ai-teal"><i class="fa-solid fa-database"></i></div>
+          <div class="arch-info">
+            <h3>Layer 1: Data <span style="font-size:12px;color:var(--text-muted);font-weight:400">Chopping the Books</span></h3>
+            <div class="a-sub">Book &rarr; Small pieces &rarr; Save &amp; search</div>
+          </div>
+        </div>
+        <p class="a-desc">I took two investing books and <strong>chopped them into 1,139 small knowledge pieces</strong>. Each piece keeps its chapter context, judgment criteria, and case examples. I also tagged every piece with labels like "which accounting item it covers" and "how serious the red flag is".</p>
+        <div class="arch-stats">
+          <div class="as-cell">
+            <div class="as-num teal">1,139</div>
+            <div class="as-label">Knowledge<br>Pieces</div>
+          </div>
+          <div class="as-cell">
+            <div class="as-num teal">17</div>
+            <div class="as-label">Core Items<br>Checked</div>
+          </div>
+          <div class="as-cell">
+            <div class="as-num teal">22</div>
+            <div class="as-label">Audit<br>Rules</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-card ac-blue reveal reveal-delay-2">
+        <div class="arch-head">
+          <div class="arch-icon ai-blue"><i class="fa-solid fa-gears"></i></div>
+          <div class="arch-info">
+            <h3>Layer 2: Logic <span style="font-size:12px;color:var(--text-muted);font-weight:400">Searchable Rule Engine</span></h3>
+            <div class="a-sub">22 rules stored so AI can find the right one instantly</div>
+          </div>
+        </div>
+        <p class="a-desc">The 22 audit rules are stored in a special database called a <strong>Vector DB</strong>. When the AI reaches a step in its analysis, it <strong>automatically searches</strong> for the most relevant rule and example — instead of guessing what the mentor "might say". It works for <strong>China A-shares, Hong Kong stocks, and US stocks</strong> across three different market rule sets.</p>
+        <div class="flow-visual" style="margin-top:16px; padding:14px;">
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--teal-bg); color:var(--teal);"><i class="fa-solid fa-book"></i></div>
+            <div class="fv-text" style="color:var(--teal);">Source</div>
+            <div class="fv-sub">Original books</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--blue-bg); color:var(--blue);"><i class="fa-solid fa-scissors"></i></div>
+            <div class="fv-text" style="color:var(--blue);">Chunk</div>
+            <div class="fv-sub">Cut + tag</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--purple-bg); color:var(--purple);"><i class="fa-solid fa-cubes"></i></div>
+            <div class="fv-text" style="color:var(--purple);">Store</div>
+            <div class="fv-sub">Save to database</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--coral-bg); color:var(--coral);"><i class="fa-solid fa-bolt"></i></div>
+            <div class="fv-text" style="color:var(--coral);">Find</div>
+            <div class="fv-sub">Instant search</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-1" style="margin-bottom:28px;">
+      <div class="arch-card ac-purple">
+        <div class="arch-head">
+          <div class="arch-icon ai-purple"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="arch-info">
+            <h3>Layer 3: Interaction <span style="font-size:12px;color:var(--text-muted);font-weight:400">RAG — Search Before Speak</span></h3>
+            <div class="a-sub">The AI must search the knowledge base FIRST, then answer — no making things up</div>
+          </div>
+        </div>
+        <p class="a-desc">I use a technique called <strong>RAG (Retrieval-Augmented Generation)</strong>. It means: every time the AI makes a judgment, it <strong>must search the knowledge base first, then reason based on what it finds</strong> — instead of making up answers from its own training data. This eliminates AI's biggest flaw: <strong>hallucination (confidently saying wrong things)</strong>.</p>
+        <div class="flow-visual" style="margin-top:16px; padding:14px;">
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--coral-bg); color:var(--coral);"><i class="fa-solid fa-file-pdf"></i></div>
+            <div class="fv-text" style="color:var(--coral);">Input</div>
+            <div class="fv-sub">Annual report</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--purple-bg); color:var(--purple);"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <div class="fv-text" style="color:var(--purple);">Search</div>
+            <div class="fv-sub">Find relevant rules</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--blue-bg); color:var(--blue);"><i class="fa-solid fa-brain"></i></div>
+            <div class="fv-text" style="color:var(--blue);">Think</div>
+            <div class="fv-sub">Reason with evidence</div>
+          </div>
+          <i class="fa-solid fa-arrow-right fv-arrow"></i>
+          <div class="fv-step">
+            <div class="fv-icon" style="background:var(--green-bg); color:var(--green);"><i class="fa-solid fa-file-check"></i></div>
+            <div class="fv-text" style="color:var(--green);">Output</div>
+            <div class="fv-sub">Answer with sources</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-2">
+      <div class="pillar-row">
+        <div class="pillar-card">
+          <div class="pl-dot" style="background:var(--coral);"></div>
+          <div class="pl-title" style="color:var(--coral);">Guard Rail 1: Fixed Steps</div>
+          <div class="pl-desc">Must follow all 6 check steps in order<br><strong>Never skip, never miss</strong></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pl-dot" style="background:var(--blue);"></div>
+          <div class="pl-title" style="color:var(--blue);">Guard Rail 2: Knowledge First</div>
+          <div class="pl-desc">Every judgment must come from the knowledge base<br><strong>Search the expert's own words</strong></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pl-dot" style="background:var(--purple);"></div>
+          <div class="pl-title" style="color:var(--purple);">Guard Rail 3: Calculate, Don't Guess</div>
+          <div class="pl-desc">All financial ratios must be calculated by code<br><strong>No eyeballing numbers</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 3: CORE FEATURES ============ -->
+  <section id="sec-features">
+    <div class="reveal">
+      <div class="section-header">
+        <span class="section-num">03 &mdash; Features</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">What Can It Do?</h2>
+      <p class="section-sub">An automated "6-step checking pipeline" + automatic "red flag scanner" — an auditor that never gets lazy, never skips steps, and doesn't play favorites.</p>
+    </div>
+
+    <div class="reveal reveal-delay-1" style="margin-bottom:32px;">
+      <div class="steps-timeline">
+        <div class="step-item s1">
+          <div class="step-head">
+            <span class="step-num">Step 1</span>
+            <h4>Read the Basics</h4>
+            <span class="s-tag cn">Data</span>
+          </div>
+          <div class="s-desc">Extract company name, industry, reporting period, stock exchange, and auditor's opinion. Figure out which market rules apply — the Agent supports <strong>China A-shares, Hong Kong stocks, and US stocks</strong>, each with its own accounting standards and rule set.</div>
+        </div>
+        <div class="step-item s2">
+          <div class="step-head">
+            <span class="step-num">Step 2</span>
+            <h4>Calculate Key Numbers</h4>
+            <span class="s-tag calc">Calculate</span>
+          </div>
+          <div class="s-desc">Use a calculator tool to independently compute: profit margin, net profit ratio, expense ratio, cash flow vs. net profit, debt ratio, ROE, receivables growth vs. revenue growth, inventory growth vs. revenue growth. <strong>Every number is calculated from scratch — never copied from the report.</strong></div>
+        </div>
+        <div class="step-item s3">
+          <div class="step-head">
+            <span class="step-num">Step 3</span>
+            <h4>Check Each Item One by One</h4>
+            <span class="s-tag rag">Search</span>
+          </div>
+          <div class="s-desc">For each of 17 key accounting items (receivables, inventory, goodwill, fixed assets, investments, construction in progress, R&D spending, etc.), search the knowledge base and compare against the expert's standards.</div>
+        </div>
+        <div class="step-item s4">
+          <div class="step-head">
+            <span class="step-num">Step 4</span>
+            <h4>Sort Problems by Severity</h4>
+            <span class="s-tag judge">Judge</span>
+          </div>
+          <div class="s-desc">Classify all findings into three levels: <strong style="color:var(--red)">Red — hard red flag</strong> (immediate reject), <strong style="color:var(--amber)">Yellow — needs more checking</strong>, <strong style="color:var(--green)">Green — looks fine</strong>. Every conclusion must cite a specific rule from the knowledge base.</div>
+        </div>
+        <div class="step-item s5">
+          <div class="step-head">
+            <span class="step-num">Step 5</span>
+            <h4>Overall Judgment</h4>
+            <span class="s-tag judge">Judge</span>
+          </div>
+          <div class="s-desc">Ask the three fundamental questions: Are profits real? Are they sustainable? Can the company maintain them without spending huge amounts of capital? Then give a final yes/no verdict.</div>
+        </div>
+        <div class="step-item s6">
+          <div class="step-head">
+            <span class="step-num">Step 6</span>
+            <h4>Generate Report</h4>
+            <span class="s-tag cn">Output</span>
+          </div>
+          <div class="s-desc">Produce a complete HTML audit report with: summary dashboard, key metrics, item-by-item scan results, traffic-light verdicts, and overall conclusion. One report, everything clear at a glance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-2">
+      <div class="red-light-section">
+        <div class="red-light-box">
+          <h3><i class="fa-solid fa-triangle-exclamation"></i> Automatic Red Flag Scanner</h3>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">The most critical "hard red flag" rules from my 22-rule set — if ANY one of these triggers, the Agent flashes a red light and recommends avoiding the stock. Here are some key examples:</p>
+          <div class="rule-grid">
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Receivables growing faster than revenue</strong> — customers might not be paying</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Cash flow from operations below net profit for 3 years</strong> — profits might not be real cash</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Profit margin way off from industry average</strong> — needs a really good explanation</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Inventory growing faster than revenue</strong> — products might not be selling</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Goodwill over 30% of net assets</strong> — huge write-down risk</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Construction in progress not turning into assets for years</strong> — might be hiding expenses</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Too many related-party transactions</strong> — money might be flowing to friends</div>
+            </div>
+            <div class="rule-item">
+              <div class="ri-dot"></div>
+              <div class="ri-text"><strong>Auditor's opinion is not "clean"</strong> — the auditors themselves see problems</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 4: VALUE PROPOSITION ============ -->
+  <section id="sec-value">
+    <div class="reveal">
+      <div class="section-header">
+        <span class="section-num">04 &mdash; Value</span>
+        <div class="section-line"></div>
+      </div>
+      <h2 class="section-title">Why Does This Matter Beyond Finance?</h2>
+      <p class="section-sub">The real value isn't just "catching bad financial reports" — it proves a <strong>universal pattern for building AI agents in any rule-heavy, cross-checking scenario</strong>.</p>
+    </div>
+
+    <div class="value-layout">
+      <div class="value-main reveal reveal-delay-1">
+        <h3><i class="fa-solid fa-arrows-rotate" style="color:var(--teal);margin-right:10px;"></i>Same Architecture, Different Industries</h3>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">The same "chop expert knowledge → store in searchable database → force AI to follow a pipeline" approach can be applied to ANY field with lots of rules and cross-checking:</p>
+        <ul class="transfer-list">
+          <li><strong>Airline safety compliance</strong> — chop aviation authority rules into knowledge pieces, automatically check if an airline's operations comply</li>
+          <li><strong>Hospital shift scheduling</strong> — encode labor laws and union contracts as rules, automatically audit if a schedule violates them</li>
+          <li><strong>Airport slot coordination</strong> — put IATA scheduling rules into the database, help coordinators make better decisions</li>
+          <li><strong>Ferry and train dispatching</strong> — encode safety rules and working-hour limits, auto-check if a schedule is legal</li>
+          <li><strong>Any "expert judgment → encode as rules → AI automates it" scenario</strong></li>
+        </ul>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <div class="use-case-stack">
+          <div class="use-card">
+            <div class="uc-head">
+              <div class="uc-icon" style="background:var(--teal-bg); color:var(--teal);"><i class="fa-solid fa-shield-halved"></i></div>
+              <h4>Every Conclusion Has a Source<br><span style="font-size:11px;color:var(--text-muted);font-weight:400">Fully traceable</span></h4>
+            </div>
+            <div class="uc-desc">Every audit finding cites a specific rule number and quotes from the knowledge base. A human auditor can trace every step of the AI's reasoning — <strong>it's transparent, not a black box</strong>.</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-head">
+              <div class="uc-icon" style="background:var(--blue-bg); color:var(--blue);"><i class="fa-solid fa-ban"></i></div>
+              <h4>Zero Hallucination<br><span style="font-size:11px;color:var(--text-muted);font-weight:400">No making things up</span></h4>
+            </div>
+            <div class="uc-desc">The RAG architecture means the AI <strong>can only say what's in the knowledge base</strong>. "The database is its brain, the pipeline is its discipline, the calculator is its hands" — all three are essential.</div>
+          </div>
+          <div class="use-card">
+            <div class="uc-head">
+              <div class="uc-icon" style="background:var(--purple-bg); color:var(--purple);"><i class="fa-solid fa-scale-balanced"></i></div>
+              <h4>Tested on Real Markets<br><span style="font-size:11px;color:var(--text-muted);font-weight:400">Both good and bad companies</span></h4>
+            </div>
+            <div class="uc-desc">Successfully tested on real stocks: correctly identified a Chinese A-share company (Guangdao Digital — 99% fake revenue, later delisted) as a fraud, and correctly judged Tencent (Hong Kong) as a healthy company. <strong>It doesn't falsely accuse the good guys, and doesn't let the bad guys slip through.</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-3">
+      <div class="insight-box">
+        <div class="insight-text"><span class="hl">AI handles the "is it wrong?" part.<br>Humans handle the "do I understand it?" part.</span><br>That's the right split.</div>
+        <div class="insight-sub">Falsification is automatable. Understanding is human. This project proves the division of labor.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="logo-text">FINANCIAL AUDIT AGENT</div>
+    <p>Knowledge-Driven &middot; RAG-Powered &middot; Zero Hallucination &mdash; Every conclusion has a source.</p>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const N = 45, MAX_D = 130;
+  function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  class P {
+    constructor() {
+      this.x = Math.random()*w; this.y = Math.random()*h;
+      this.vx = (Math.random()-.5)*.25; this.vy = (Math.random()-.5)*.25;
+      this.r = Math.random()*1.2+.5;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if(this.x<0||this.x>w) this.vx*=-1;
+      if(this.y<0||this.y>h) this.vy*=-1;
+    }
+  }
+  for(let i=0;i<N;i++) particles.push(new P());
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<particles.length;i++) {
+      particles[i].update();
+      for(let j=i+1;j<particles.length;j++) {
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<MAX_D) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle=`rgba(9,132,227,${0.07*(1-dist/MAX_D)})`;
+          ctx.lineWidth=.5; ctx.stroke();
+        }
+      }
+      ctx.beginPath();
+      ctx.arc(particles[i].x,particles[i].y,particles[i].r,0,Math.PI*2);
+      ctx.fillStyle='rgba(9,132,227,0.18)';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const ro = new IntersectionObserver(e => { e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }); }, {threshold:.12});
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+const dots = document.querySelectorAll('.nav-dot');
+const secs = ['header','sec-problem','sec-arch','sec-features','sec-value'];
+const no = new IntersectionObserver(e => {
+  e.forEach(x => {
+    if(x.isIntersecting) {
+      dots.forEach(d => d.classList.remove('active'));
+      const d = document.querySelector(`.nav-dot[data-section="${x.target.id}"]`);
+      if(d) d.classList.add('active');
+    }
+  });
+}, {threshold:.3});
+ secs.forEach(id => { const el = document.getElementById(id); if(el) no.observe(el); });
+ dots.forEach(d => { d.addEventListener('click', () => { const t = document.getElementById(d.dataset.section); if(t) t.scrollIntoView({behavior:'smooth',block:'center'}); }); });
+
+// ===== TOP BAR =====
+(function(){
+  const bar = document.getElementById('topBar');
+  const burger = document.getElementById('topBurger');
+  const links = bar.querySelector('.top-bar-links');
+  if(!bar||!links) return;
+  window.addEventListener('scroll', () => bar.classList.toggle('scrolled', window.scrollY > 10));
+  if(burger){
+    burger.addEventListener('click', () => {
+      links.classList.toggle('open');
+      const icon = burger.querySelector('i');
+      icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-xmark');
+    });
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      links.classList.remove('open');
+      const icon = burger.querySelector('i');
+      icon.classList.add('fa-bars'); icon.classList.remove('fa-xmark');
+    }));
+  }
+})();
+</script>
+</body>
+</html>

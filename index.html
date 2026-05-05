@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Portfolio — Fang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --bg-card: rgba(255,255,255,.92);
+    --border: rgba(0,0,0,.07);
+    --border-hover: rgba(0,0,0,.15);
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --teal: #00b894;
+    --blue: #0984e3;
+    --purple: #6c5ce7;
+    --coral: #e17055;
+    --cyan: #00cec9;
+    --teal-bg: rgba(0,184,148,.08);
+    --blue-bg: rgba(9,132,227,.08);
+    --purple-bg: rgba(108,92,231,.08);
+    --coral-bg: rgba(225,112,85,.08);
+    --cyan-bg: rgba(0,206,201,.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== CANVAS PARTICLE BACKGROUND ===== */
+  #particle-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  .gradient-bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse at 15% 0%, rgba(0,184,148,.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 100%, rgba(9,132,227,.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(108,92,231,.03) 0%, transparent 50%);
+  }
+
+  .grid-bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .container { position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 32px; }
+
+  /* ===== TOP NAV ===== */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(248,250,252,.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow .3s;
+  }
+  .top-nav.scrolled { box-shadow: 0 1px 12px rgba(0,0,0,.06); }
+  .top-nav-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 800; font-size: 18px; letter-spacing: -0.5px;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .nav-logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px;
+  }
+  .nav-links { display: flex; align-items: center; gap: 8px; list-style: none; }
+  .nav-links a {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    text-decoration: none; transition: all .25s;
+  }
+  .nav-links a:hover {
+    background: var(--teal-bg); color: var(--teal);
+  }
+  .nav-links a i { font-size: 12px; }
+
+  .nav-hamburger {
+    display: none;
+    background: none; border: none; cursor: pointer;
+    width: 36px; height: 36px; border-radius: 8px;
+    align-items: center; justify-content: center;
+    color: var(--text-secondary); font-size: 18px;
+    transition: background .2s;
+  }
+  .nav-hamburger:hover { background: var(--teal-bg); }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 140px 0 72px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--teal-bg);
+    border: 1px solid rgba(0,184,148,.25);
+    color: var(--teal);
+    font-size: 12px; font-weight: 600;
+    padding: 6px 20px; border-radius: 24px;
+    margin-bottom: 28px; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .hero-badge i { font-size: 10px; }
+  .hero h1 {
+    font-size: 52px; font-weight: 900; line-height: 1.08;
+    letter-spacing: -2px; margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 50%, var(--purple) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle {
+    font-size: 18px; font-weight: 400; color: var(--text-secondary);
+    line-height: 1.7; max-width: 580px; margin: 0 auto;
+  }
+
+  /* ===== SECTION ===== */
+  .section-header {
+    text-align: center; margin-bottom: 48px;
+  }
+  .section-header h2 {
+    font-size: 30px; font-weight: 800; letter-spacing: -1px;
+    margin-bottom: 10px;
+  }
+  .section-header p {
+    font-size: 15px; color: var(--text-muted); line-height: 1.6;
+  }
+
+  /* ===== PROJECT CARDS ===== */
+  .projects { padding: 40px 0 100px; }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 36px;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+    transition: all .4s cubic-bezier(.25,.46,.45,.94);
+    position: relative; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; border-radius: 20px 20px 0 0;
+    transition: height .4s;
+  }
+  .project-card:nth-child(1)::before { background: linear-gradient(90deg, var(--teal), var(--cyan)); }
+  .project-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), var(--purple)); }
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(0,0,0,.1);
+    border-color: var(--border-hover);
+  }
+  .project-card:hover::before { height: 6px; }
+
+  .pc-icon-wrap {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 24px;
+    transition: transform .4s;
+  }
+  .project-card:hover .pc-icon-wrap { transform: scale(1.1); }
+  .project-card:nth-child(1) .pc-icon-wrap { background: var(--teal-bg); color: var(--teal); }
+  .project-card:nth-child(2) .pc-icon-wrap { background: var(--blue-bg); color: var(--blue); }
+
+  .pc-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 6px;
+    margin-bottom: 16px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .project-card:nth-child(1) .pc-tag { background: var(--teal-bg); color: var(--teal); }
+  .project-card:nth-child(2) .pc-tag { background: var(--blue-bg); color: var(--blue); }
+
+  .project-card h3 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+  .project-card .pc-desc {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+    flex: 1; margin-bottom: 24px;
+  }
+  .pc-footer {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    transition: gap .3s, color .3s;
+  }
+  .project-card:nth-child(1):hover .pc-footer { color: var(--teal); gap: 12px; }
+  .project-card:nth-child(2):hover .pc-footer { color: var(--blue); gap: 12px; }
+
+  /* ===== COMING SOON CARD ===== */
+  .project-card.coming-soon {
+    border-style: dashed;
+    opacity: .55;
+    cursor: default;
+    grid-column: 1 / -1;
+  }
+  .project-card.coming-soon:hover {
+    transform: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .project-card.coming-soon::before { background: linear-gradient(90deg, var(--purple-bg), var(--coral-bg)); }
+  .project-card.coming-soon .pc-icon-wrap { background: var(--purple-bg); color: var(--purple); }
+  .project-card.coming-soon .pc-tag { background: var(--purple-bg); color: var(--purple); }
+
+  /* ===== SKILLS STRIP ===== */
+  .skills-strip {
+    padding: 40px 0 80px;
+  }
+  .skills-tags {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  }
+  .skill-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: 24px;
+    font-size: 13px; font-weight: 500;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    transition: all .3s;
+  }
+  .skill-chip:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transform: translateY(-1px);
+  }
+  .skill-chip i { font-size: 11px; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center;
+    padding: 40px 0 48px;
+    border-top: 1px solid var(--border);
+  }
+  footer p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  footer a { color: var(--teal); text-decoration: none; font-weight: 500; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .7s cubic-bezier(.25,.46,.45,.94), transform .7s cubic-bezier(.25,.46,.45,.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal:nth-child(2) { transition-delay: .1s; }
+  .reveal:nth-child(3) { transition-delay: .2s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .projects-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+    .project-card.coming-soon { grid-column: auto; }
+    .hero h1 { font-size: 38px; letter-spacing: -1.2px; }
+    .hero .subtitle { font-size: 16px; }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 0 20px; }
+    .top-nav-inner { padding: 0 20px; }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 60px; left: 0; right: 0;
+      background: rgba(248,250,252,.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      padding: 12px 20px 16px;
+      gap: 4px;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 10px 14px; border-radius: 10px; font-size: 14px; }
+    .nav-hamburger { display: flex; }
+
+    .hero { padding: 110px 0 48px; }
+    .hero h1 { font-size: 30px; letter-spacing: -1px; }
+    .project-card { padding: 28px 24px; }
+    .section-header h2 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+<div class="gradient-bg"></div>
+<div class="grid-bg"></div>
+
+<!-- ===== TOP NAVIGATION ===== -->
+<nav class="top-nav" id="topNav">
+  <div class="top-nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon"><i class="fas fa-bolt"></i></div>
+      <span>Fang's AI Lab</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#projects"><i class="fas fa-layer-group"></i> Projects</a></li>
+      <li><a href="pdc-agent-vision.html"><i class="fas fa-robot"></i> PDC + AI</a></li>
+      <li><a href="financial-audit-agent-en.html"><i class="fas fa-shield-halved"></i> Audit Agent</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero reveal">
+    <h1>AI-Powered<br>Solutions</h1>
+    <p class="subtitle">
+      Building intelligent agents that automate complex workflows — 
+      from financial audits to strategic analysis.
+    </p>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section class="projects" id="projects">
+    <div class="section-header reveal">
+      <h2>Featured Projects</h2>
+      <p>Click any card to explore the full interactive showcase</p>
+    </div>
+
+    <div class="projects-grid">
+
+      <!-- Card 1: PDC + AI Agent Vision -->
+      <a href="pdc-agent-vision.html" class="project-card reveal">
+        <div class="pc-icon-wrap"><i class="fas fa-robot"></i></div>
+        <span class="pc-tag">Strategy &amp; Planning</span>
+        <h3>PDC + AI Agents</h3>
+        <p class="pc-desc">
+          A strategic vision for integrating AI agents into PDC operations — 
+          redefining how intelligent automation enhances decision-making, 
+          workflow efficiency, and cross-functional collaboration.
+        </p>
+        <div class="pc-footer">
+          <span>Explore</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Card 2: Financial Audit Agent -->
+      <a href="financial-audit-agent-en.html" class="project-card reveal">
+        <div class="pc-icon-wrap"><i class="fas fa-shield-halved"></i></div>
+        <span class="pc-tag">Financial Analysis</span>
+        <h3>AI Financial Audit Agent</h3>
+        <p class="pc-desc">
+          An autonomous agent that audits financial statements across A-shares, 
+          Hong Kong stocks, and US stocks — using RAG-powered knowledge retrieval 
+          with a 6-step audit pipeline and traffic-light verdict system.
+        </p>
+        <div class="pc-footer">
+          <span>Explore</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Coming Soon -->
+      <div class="project-card coming-soon reveal">
+        <div class="pc-icon-wrap"><i class="fas fa-plus"></i></div>
+        <span class="pc-tag">Coming Soon</span>
+        <h3>More on the way...</h3>
+        <p class="pc-desc">
+          New AI projects are under development. Stay tuned for upcoming showcases 
+          in data analytics, automation workflows, and intelligent systems.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SKILLS STRIP ===== -->
+  <section class="skills-strip">
+    <div class="section-header reveal">
+      <h2>Tech Stack</h2>
+      <p>Core technologies powering these projects</p>
+    </div>
+    <div class="skills-tags reveal">
+      <span class="skill-chip"><i class="fas fa-brain"></i> LLM / RAG</span>
+      <span class="skill-chip"><i class="fas fa-database"></i> Vector DB</span>
+      <span class="skill-chip"><i class="fas fa-code"></i> Python</span>
+      <span class="skill-chip"><i class="fas fa-globe"></i> HTML / CSS / JS</span>
+      <span class="skill-chip"><i class="fas fa-gears"></i> LangChain</span>
+      <span class="skill-chip"><i class="fas fa-diagram-project"></i> Dify</span>
+      <span class="skill-chip"><i class="fas fa-chart-line"></i> Financial Analysis</span>
+      <span class="skill-chip"><i class="fas fa-shield-halved"></i> Audit Rules Engine</span>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>Built by <a href="#">Fang</a> &mdash; AI Portfolio &copy; 2026</p>
+</footer>
+
+<script>
+// ===== PARTICLE CANVAS =====
+(function(){
+  const c = document.getElementById('particle-canvas');
+  const ctx = c.getContext('2d');
+  let W, H, particles = [];
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  class P {
+    constructor(){this.reset();}
+    reset(){
+      this.x = Math.random()*W;
+      this.y = Math.random()*H;
+      this.r = Math.random()*2+0.5;
+      this.vx = (Math.random()-0.5)*0.3;
+      this.vy = (Math.random()-0.5)*0.3;
+      this.alpha = Math.random()*0.3+0.08;
+    }
+    update(){
+      this.x+=this.vx; this.y+=this.vy;
+      if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+    }
+    draw(){
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,184,148,${this.alpha})`; ctx.fill();
+    }
+  }
+  for(let i=0;i<60;i++) particles.push(new P());
+  function animate(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{p.update();p.draw();});
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ===== NAV SCROLL SHADOW =====
+const nav = document.getElementById('topNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// ===== HAMBURGER MENU =====
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+  const icon = hamburger.querySelector('i');
+  icon.classList.toggle('fa-bars');
+  icon.classList.toggle('fa-xmark');
+});
+// Close menu on link click
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    const icon = hamburger.querySelector('i');
+    icon.classList.add('fa-bars');
+    icon.classList.remove('fa-xmark');
+  });
+});
+
+// ===== SCROLL REVEAL =====
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
