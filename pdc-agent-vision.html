@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PDC + AI Agents — Strategic Vision</title>
+<title>PDC + AI Agents — Plain Language</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -31,7 +31,6 @@
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -43,745 +42,176 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== CANVAS PARTICLE BACKGROUND ===== */
-  #particle-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
+  #particle-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-  /* ===== GRADIENT OVERLAY ===== */
   .gradient-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: 
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
       radial-gradient(ellipse at 20% 0%, rgba(0,184,148,.08) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, rgba(9,132,227,.08) 0%, transparent 50%),
       radial-gradient(ellipse at 50% 50%, rgba(108,92,231,.04) 0%, transparent 50%);
   }
 
-  /* ===== GRID OVERLAY ===== */
   .grid-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
+    position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image:
       linear-gradient(rgba(0,0,0,.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,0,0,.03) 1px, transparent 1px);
     background-size: 80px 80px;
   }
 
-  /* ===== LAYOUT ===== */
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 0 32px;
-  }
+  .container { position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 32px; }
 
-  /* ===== NAV INDICATOR ===== */
-  .nav-dots {
-    position: fixed;
-    right: 28px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .nav-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(0,0,0,.15);
-    transition: all .4s cubic-bezier(.25,.46,.45,.94);
-    cursor: pointer;
-    position: relative;
-  }
-  .nav-dot.active {
-    background: var(--teal);
-    box-shadow: 0 0 12px rgba(0,184,148,.4);
-    transform: scale(1.3);
-  }
-  .nav-dot::after {
-    content: attr(data-label);
-    position: absolute;
-    right: 22px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity .3s;
-    pointer-events: none;
-  }
-  .nav-dot:hover::after { opacity: 1; }
+  .nav-dots { position:fixed; right:28px; top:50%; transform:translateY(-50%); z-index:100; display:flex; flex-direction:column; gap:14px; }
+  .nav-dot { width:10px; height:10px; border-radius:50%; background:rgba(0,0,0,.15); transition:all .4s cubic-bezier(.25,.46,.45,.94); cursor:pointer; position:relative; }
+  .nav-dot.active { background:var(--teal); box-shadow:0 0 12px rgba(0,184,148,.4); transform:scale(1.3); }
+  .nav-dot::after { content:attr(data-label); position:absolute; right:22px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--text-muted); white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; }
+  .nav-dot:hover::after { opacity:1; }
 
-  /* ===== HEADER ===== */
-  header {
-    text-align: center;
-    padding: 80px 0 64px;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--teal-bg);
-    border: 1px solid rgba(0,184,148,.25);
-    color: var(--teal);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 6px 18px;
-    border-radius: 24px;
-    margin-bottom: 28px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .badge i { font-size: 10px; }
+  header { text-align:center; padding:80px 0 64px; }
+  .badge { display:inline-flex; align-items:center; gap:8px; background:var(--teal-bg); border:1px solid rgba(0,184,148,.25); color:var(--teal); font-size:12px; font-weight:600; padding:6px 18px; border-radius:24px; margin-bottom:28px; letter-spacing:1px; text-transform:uppercase; }
+  .badge i { font-size:10px; }
+  header h1 { font-size:44px; font-weight:900; line-height:1.1; letter-spacing:-1.5px; margin-bottom:18px; background:linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .subtitle { font-size:17px; font-weight:400; color:var(--text-secondary); line-height:1.6; max-width:640px; margin:0 auto 40px; }
 
-  header h1 {
-    font-size: 52px;
-    font-weight: 900;
-    line-height: 1.08;
-    letter-spacing: -2px;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  .stats-bar { display:flex; justify-content:center; gap:0; flex-wrap:wrap; }
+  .stat { text-align:center; padding:20px 32px; }
+  .stat .number { font-size:40px; font-weight:900; letter-spacing:-1px; }
+  .stat .divider { width:32px; height:3px; border-radius:2px; margin:10px auto; }
+  .stat .desc { font-size:13px; color:var(--text-muted); font-weight:500; }
+  .teal { color:var(--teal); } .teal-bg { background:var(--teal); }
+  .blue { color:var(--blue); } .blue-bg { background:var(--blue); }
+  .purple { color:var(--purple); } .purple-bg { background:var(--purple); }
+  .coral { color:var(--coral); } .coral-bg { background:var(--coral); }
 
-  header .subtitle {
-    font-size: 17px;
-    font-weight: 400;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 600px;
-    margin: 0 auto 44px;
-  }
+  .section-header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+  .section-num { font-size:13px; font-weight:800; color:var(--teal); letter-spacing:1px; }
+  .section-line { flex:1; height:1px; background:var(--border); }
+  .section-title { font-size:30px; font-weight:800; letter-spacing:-1px; margin-bottom:10px; }
+  .section-sub { font-size:15px; color:var(--text-muted); line-height:1.6; max-width:640px; }
 
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
-  }
-  .stat { text-align: center; }
-  .stat .number {
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .stat .number.teal { color: var(--teal); }
-  .stat .number.blue { color: var(--blue); }
-  .stat .number.purple { color: var(--purple); }
-  .stat .number.coral { color: var(--coral); }
-  .stat .desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 6px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-  }
-  .stat .divider {
-    width: 24px;
-    height: 2px;
-    border-radius: 1px;
-    margin: 8px auto 0;
-  }
-  .divider.teal { background: var(--teal); }
-  .divider.blue { background: var(--blue); }
-  .divider.purple { background: var(--purple); }
-  .divider.coral { background: var(--coral); }
+  section { padding:72px 0; }
 
-  /* ===== SECTION COMMON ===== */
-  section { margin-bottom: 80px; }
+  .understand-layout { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:36px; }
+  .fact-list { display:flex; flex-direction:column; gap:20px; }
+  .fact-item { display:flex; gap:16px; align-items:flex-start; }
+  .fi-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
+  .fi-icon.teal { background:var(--teal-bg); color:var(--teal); }
+  .fi-icon.blue { background:var(--blue-bg); color:var(--blue); }
+  .fi-icon.purple { background:var(--purple-bg); color:var(--purple); }
+  .fi-icon.coral { background:var(--coral-bg); color:var(--coral); }
+  .fi-text { font-size:14px; color:var(--text-secondary); line-height:1.65; }
+  .fi-text strong { color:var(--text-primary); }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 8px;
-  }
-  .section-num {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .right-stack { display:flex; flex-direction:column; gap:20px; }
+  .card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; box-shadow:0 1px 3px rgba(0,0,0,.04); transition:all .3s; }
+  .card:hover { box-shadow:0 8px 24px rgba(0,0,0,.08); border-color:var(--border-hover); }
+  .card h3 { font-size:16px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .pill { display:inline-flex; align-items:center; gap:5px; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:500; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-secondary); }
+  .pill.p-aviation { background:rgba(0,184,148,.06); color:#00b894; border-color:rgba(0,184,148,.2); }
+  .pill.p-health { background:rgba(108,92,231,.06); color:#6c5ce7; border-color:rgba(108,92,231,.2); }
+  .pill.p-emergency { background:rgba(225,112,85,.06); color:#e17055; border-color:rgba(225,112,85,.2); }
+  .pill.p-retail { background:rgba(253,203,110,.15); color:#d4a017; border-color:rgba(253,203,110,.3); }
+  .pill.p-media { background:rgba(9,132,227,.06); color:#0984e3; border-color:rgba(9,132,227,.2); }
+  .card-desc { font-size:13px; color:var(--text-muted); line-height:1.6; }
 
-  .section-title {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -.5px;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-  }
-  .section-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
+  .tech-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .tech-cell { text-align:center; padding:16px 10px; background:var(--bg-elevated); border-radius:12px; }
+  .tc-icon { font-size:24px; margin-bottom:8px; }
+  .tc-name { font-size:13px; font-weight:700; margin-bottom:4px; }
+  .tc-desc { font-size:11px; color:var(--text-muted); }
 
-  /* ===== SECTION 1: UNDERSTAND ===== */
-  .understand-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  .fact-list { display: flex; flex-direction: column; gap: 10px; }
-  .fact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    transition: all .3s ease;
-    cursor: default;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .fact-item:hover {
-    background: #fff;
-    border-color: var(--border-hover);
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  }
-  .fact-item .fi-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .fi-icon.teal { background: var(--teal-bg); color: var(--teal); }
-  .fi-icon.blue { background: var(--blue-bg); color: var(--blue); }
-  .fi-icon.purple { background: var(--purple-bg); color: var(--purple); }
-  .fi-icon.coral { background: var(--coral-bg); color: var(--coral); }
-  .fact-item .fi-text {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-  .fact-item .fi-text strong {
-    color: var(--text-primary);
-    font-weight: 600;
-  }
+  .challenges-row { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:36px; }
+  .challenge-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,.04); transition:all .3s; overflow:hidden; }
+  .challenge-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.08); border-color:var(--border-hover); }
+  .cc-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:18px; }
+  .cc-icon.coral { background:var(--coral-bg); color:var(--coral); }
+  .cc-icon.purple { background:var(--purple-bg); color:var(--purple); }
+  .cc-icon.teal { background:var(--teal-bg); color:var(--teal); }
+  .challenge-card h3 { font-size:18px; font-weight:700; margin-bottom:12px; }
+  .challenge-card p { font-size:13px; color:var(--text-secondary); line-height:1.65; }
+  .cc-tag { display:inline-block; font-size:11px; font-weight:600; padding:4px 12px; border-radius:6px; margin-top:16px; }
+  .cc-tag.coral { background:var(--coral-bg); color:var(--coral); }
+  .cc-tag.purple { background:var(--purple-bg); color:var(--purple); }
+  .cc-tag.teal { background:var(--teal-bg); color:var(--teal); }
 
-  .right-stack { display: flex; flex-direction: column; gap: 16px; }
+  .agents-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:36px; }
+  .agent-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,.04); transition:all .4s cubic-bezier(.25,.46,.45,.94); overflow:hidden; cursor:default; }
+  .agent-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.1); border-color:var(--border-hover); }
+  .top-line { position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0; }
+  .a-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .a-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .a-icon.ai-teal { background:var(--teal-bg); color:var(--teal); }
+  .a-icon.ai-blue { background:var(--blue-bg); color:var(--blue); }
+  .a-icon.ai-purple { background:var(--purple-bg); color:var(--purple); }
+  .a-icon.ai-coral { background:var(--coral-bg); color:var(--coral); }
+  .a-info h3 { font-size:17px; font-weight:700; margin-bottom:2px; }
+  .a-sub { font-size:12px; color:var(--text-muted); font-weight:500; }
+  .a-desc { font-size:13px; color:var(--text-secondary); line-height:1.65; margin-bottom:18px; }
+  .flow-line { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .flow-box { padding:6px 14px; border-radius:8px; font-size:11px; font-weight:600; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-secondary); white-space:nowrap; }
+  .flow-box.fb-trigger { background:var(--coral-bg); color:var(--coral); border-color:rgba(225,112,85,.25); }
+  .flow-box.fb-reason { background:var(--blue-bg); color:var(--blue); border-color:rgba(9,132,227,.25); }
+  .flow-box.fb-action { background:var(--teal-bg); color:var(--teal); border-color:rgba(0,184,148,.25); }
+  .flow-box.fb-feedback { background:var(--purple-bg); color:var(--purple); border-color:rgba(108,92,231,.25); }
+  .flow-box.fb-blue { background:var(--blue-bg); color:var(--blue); border-color:rgba(9,132,227,.25); }
+  .flow-box.fb-cyan { background:rgba(0,206,201,.08); color:var(--cyan); border-color:rgba(0,206,201,.25); }
+  .flow-arrow { font-size:10px; color:var(--text-muted); }
+  .a-details { list-style:none; margin-bottom:14px; }
+  .a-details li { font-size:13px; color:var(--text-secondary); line-height:1.55; padding:3px 0 3px 18px; position:relative; }
+  .a-details li::before { content:''; position:absolute; left:0; top:10px; width:8px; height:8px; border-radius:50%; }
+  .a-details li.t::before { background:var(--teal); }
+  .a-details li.b::before { background:var(--blue); }
+  .a-details li.p::before { background:var(--purple); }
+  .a-details li.c::before { background:var(--coral); }
+  .a-tag { display:inline-block; font-size:11px; font-weight:600; padding:4px 12px; border-radius:6px; }
+  .a-tag.teal { background:var(--teal-bg); color:var(--teal); }
+  .a-tag.blue { background:var(--blue-bg); color:var(--blue); }
+  .a-tag.purple { background:var(--purple-bg); color:var(--purple); }
+  .a-tag.coral { background:var(--coral-bg); color:var(--coral); }
 
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    transition: all .35s cubic-bezier(.25,.46,.45,.94);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    opacity: 0;
-    transition: opacity .35s;
-  }
-  .card:hover {
-    border-color: var(--border-hover);
-    background: #fff;
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,.1);
-  }
-  .card:hover::after { opacity: 1; }
-  .card.accent-teal::after { background: linear-gradient(90deg, var(--teal), transparent); }
-  .card.accent-blue::after { background: linear-gradient(90deg, var(--blue), transparent); }
-  .card.accent-purple::after { background: linear-gradient(90deg, var(--purple), transparent); }
-  .card.accent-coral::after { background: linear-gradient(90deg, var(--coral), transparent); }
+  .formula-box { display:flex; align-items:stretch; gap:16px; margin:36px 0; flex-wrap:wrap; justify-content:center; }
+  .f-item { flex:1; min-width:200px; max-width:280px; background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px 24px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .f-icon { font-size:32px; margin-bottom:12px; }
+  .f-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .f-title { font-size:20px; font-weight:800; margin-bottom:8px; }
+  .f-title.teal { color:var(--teal); }
+  .f-title.blue { color:var(--blue); }
+  .f-title.gradient { background:linear-gradient(135deg,var(--teal),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .f-desc { font-size:12px; color:var(--text-muted); line-height:1.5; }
+  .f-op { display:flex; align-items:center; font-size:28px; font-weight:300; color:var(--text-muted); }
+  .f-op.eq { font-weight:700; color:var(--teal); }
 
-  .card h3 {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .card h3 i { font-size: 14px; }
+  .synergy-cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:28px; }
+  .syn-col { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:28px; }
+  .syn-col h4 { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .syn-col h4 i { color:var(--teal); }
+  .syn-col.right h4 i { color:var(--blue); }
+  .syn-col ul { list-style:none; }
+  .syn-col ul li { font-size:13px; color:var(--text-secondary); line-height:1.6; padding:6px 0 6px 22px; position:relative; }
+  .syn-col ul li::before { content:''; position:absolute; left:0; top:13px; width:8px; height:8px; border-radius:2px; }
+  .syn-col.left ul li::before { background:var(--teal); }
+  .syn-col.right ul li::before { background:var(--blue); }
 
-  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .pill {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 20px;
-    background: rgba(0,0,0,.03);
-    border: 1px solid rgba(0,0,0,.06);
-    color: var(--text-secondary);
-    transition: all .25s;
-    cursor: default;
-    text-transform: uppercase;
-    letter-spacing: .3px;
-  }
-  .pill:hover { transform: translateY(-1px); }
-  .pill.p-aviation { border-color: rgba(9,132,227,.25); color: var(--blue); }
-  .pill.p-aviation:hover { background: var(--blue-bg); }
-  .pill.p-health { border-color: rgba(0,184,148,.25); color: var(--teal); }
-  .pill.p-health:hover { background: var(--teal-bg); }
-  .pill.p-emergency { border-color: rgba(225,112,85,.25); color: var(--coral); }
-  .pill.p-emergency:hover { background: var(--coral-bg); }
-  .pill.p-retail { border-color: rgba(253,203,110,.25); color: #e0a800; }
-  .pill.p-retail:hover { background: rgba(253,203,110,.1); }
-  .pill.p-media { border-color: rgba(108,92,231,.25); color: var(--purple); }
-  .pill.p-media:hover { background: var(--purple-bg); }
+  footer { text-align:center; padding:48px 0; border-top:1px solid var(--border); }
+  .logo-text { font-size:14px; font-weight:800; letter-spacing:2px; color:var(--text-muted); margin-bottom:8px; }
+  footer p { font-size:13px; color:var(--text-muted); line-height:1.6; }
 
-  .card-desc {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.25,.46,.45,.94), transform .7s cubic-bezier(.25,.46,.45,.94); }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:.1s; }
+  .reveal-delay-2 { transition-delay:.2s; }
+  .reveal-delay-3 { transition-delay:.3s; }
+  .reveal-delay-4 { transition-delay:.4s; }
 
-  .tech-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-top: 4px;
+  @media (max-width:900px) {
+    .understand-layout, .synergy-cols { grid-template-columns:1fr; }
+    .agents-grid { grid-template-columns:1fr; }
+    .challenges-row { grid-template-columns:1fr; max-width:480px; margin:36px auto 0; }
+    header h1 { font-size:32px; }
   }
-  .tech-cell {
-    text-align: center;
-    padding: 14px 8px;
-    border-radius: 10px;
-    background: rgba(0,0,0,.02);
-    border: 1px solid rgba(0,0,0,.04);
-    transition: all .25s;
-  }
-  .tech-cell:hover {
-    background: rgba(0,0,0,.04);
-    border-color: rgba(0,0,0,.08);
-  }
-  .tech-cell .tc-icon { font-size: 22px; margin-bottom: 6px; }
-  .tech-cell .tc-name { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .3px; }
-  .tech-cell .tc-desc { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
-
-  /* ===== SECTION 2: CHALLENGES ===== */
-  .challenges-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-  }
-  .challenge-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 24px;
-    transition: all .35s cubic-bezier(.25,.46,.45,.94);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .challenge-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    opacity: 0;
-    transition: opacity .35s;
-  }
-  .challenge-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--border-hover);
-    background: #fff;
-    box-shadow: 0 16px 48px rgba(0,0,0,.1);
-  }
-  .challenge-card:hover::before { opacity: 1; }
-  .challenge-card.c-coral::before { background: linear-gradient(90deg, var(--coral), transparent 80%); }
-  .challenge-card.c-purple::before { background: linear-gradient(90deg, var(--purple), transparent 80%); }
-  .challenge-card.c-teal::before { background: linear-gradient(90deg, var(--teal), transparent 80%); }
-
-  .cc-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-bottom: 18px;
-  }
-  .cc-icon.coral { background: var(--coral-bg); color: var(--coral); }
-  .cc-icon.purple { background: var(--purple-bg); color: var(--purple); }
-  .cc-icon.teal { background: var(--teal-bg); color: var(--teal); }
-
-  .challenge-card h3 {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 10px;
-  }
-  .challenge-card p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-  }
-  .challenge-card p strong { color: var(--text-primary); font-weight: 500; }
-
-  .cc-tag {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 16px;
-    margin-top: 16px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-  }
-  .cc-tag.coral { background: var(--coral-bg); color: var(--coral); }
-  .cc-tag.purple { background: var(--purple-bg); color: var(--purple); }
-  .cc-tag.teal { background: var(--teal-bg); color: var(--teal); }
-
-  /* ===== SECTION 3: AGENTS ===== */
-  .agents-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  .agent-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    transition: all .4s cubic-bezier(.25,.46,.45,.94);
-    position: relative;
-    overflow: hidden;
-    cursor: default;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .agent-card .top-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    opacity: 0;
-    transition: opacity .35s;
-  }
-  .agent-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--border-hover);
-    background: #fff;
-    box-shadow: 0 16px 48px rgba(0,0,0,.1);
-  }
-  .agent-card:hover .top-line { opacity: 1; }
-  .agent-card:hover .flow-line { opacity: 1; transform: translateY(-2px); }
-
-  .a-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-  .a-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-    color: #fff;
-  }
-  .a-icon.ai-teal { background: linear-gradient(135deg, var(--teal), var(--cyan)); }
-  .a-icon.ai-blue { background: linear-gradient(135deg, var(--blue), #6db3f8); }
-  .a-icon.ai-purple { background: linear-gradient(135deg, var(--purple), #a99bfa); }
-  .a-icon.ai-coral { background: linear-gradient(135deg, var(--coral), #f7a08f); }
-
-  .a-info h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); }
-  .a-info .a-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    font-weight: 500;
-  }
-
-  .agent-card .a-desc {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 14px;
-  }
-
-  .flow-line {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background: rgba(0,0,0,.02);
-    border: 1px dashed rgba(0,0,0,.08);
-    border-radius: 8px;
-    transition: all .3s;
-    opacity: .7;
-    flex-wrap: wrap;
-  }
-  .flow-box {
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: .3px;
-  }
-  .fb-trigger { background: var(--coral-bg); color: var(--coral); }
-  .fb-reason { background: var(--purple-bg); color: var(--purple); }
-  .fb-action { background: var(--teal-bg); color: var(--teal); }
-  .fb-feedback { background: rgba(253,203,110,.1); color: #e0a800; }
-  .fb-blue { background: var(--blue-bg); color: var(--blue); }
-  .fb-cyan { background: rgba(0,206,201,.1); color: var(--cyan); }
-  .flow-arrow { color: rgba(0,0,0,.2); font-size: 10px; }
-
-  .a-details { list-style: none; margin-top: 14px; }
-  .a-details li {
-    font-size: 12.5px;
-    color: var(--text-secondary);
-    padding: 5px 0 5px 22px;
-    position: relative;
-    line-height: 1.6;
-  }
-  .a-details li::before {
-    content: '\f00c';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    left: 0;
-    font-size: 9px;
-    top: 7px;
-  }
-  .a-details li.t::before { color: var(--teal); }
-  .a-details li.b::before { color: var(--blue); }
-  .a-details li.p::before { color: var(--purple); }
-  .a-details li.c::before { color: var(--coral); }
-  .a-details li strong { color: var(--text-primary); font-weight: 600; }
-
-  .a-tag {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 16px;
-    margin-top: 14px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-  }
-  .a-tag.teal { background: var(--teal-bg); color: var(--teal); }
-  .a-tag.blue { background: var(--blue-bg); color: var(--blue); }
-  .a-tag.purple { background: var(--purple-bg); color: var(--purple); }
-  .a-tag.coral { background: var(--coral-bg); color: var(--coral); }
-
-  /* ===== SECTION 4: SYNERGY ===== */
-  .formula-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    padding: 48px 32px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    margin-bottom: 28px;
-    position: relative;
-    overflow: hidden;
-    flex-wrap: wrap;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .formula-box::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(0,184,148,.03), rgba(9,132,227,.03));
-    pointer-events: none;
-  }
-  .formula-box::after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: 20%;
-    right: 20%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--teal), var(--blue), transparent);
-    opacity: .5;
-  }
-
-  .f-item { text-align: center; position: relative; z-index: 1; }
-  .f-icon { font-size: 32px; margin-bottom: 10px; }
-  .f-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .f-title { font-size: 16px; font-weight: 700; }
-  .f-title.teal { color: var(--teal); }
-  .f-title.blue { color: var(--blue); }
-  .f-title.gradient {
-    background: linear-gradient(135deg, var(--teal), var(--blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .f-desc {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    max-width: 180px;
-    line-height: 1.5;
-  }
-  .f-op {
-    font-size: 28px;
-    font-weight: 300;
-    color: rgba(0,0,0,.15);
-    position: relative;
-    z-index: 1;
-  }
-  .f-op.eq {
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--teal), var(--blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 36px;
-  }
-
-  .synergy-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  .syn-col {
-    padding: 24px;
-    border-radius: 14px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    transition: all .3s;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  .syn-col:hover {
-    border-color: var(--border-hover);
-    background: #fff;
-  }
-  .syn-col h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-primary);
-  }
-  .syn-col ul { list-style: none; }
-  .syn-col ul li {
-    font-size: 13px;
-    color: var(--text-secondary);
-    padding: 7px 0 7px 22px;
-    position: relative;
-    line-height: 1.6;
-  }
-  .syn-col ul li::before {
-    content: '\f105';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    position: absolute;
-    left: 0;
-    font-size: 11px;
-  }
-  .syn-col.left h4 i { color: var(--teal); }
-  .syn-col.left ul li::before { color: var(--teal); }
-  .syn-col.right h4 i { color: var(--blue); }
-  .syn-col.right ul li::before { color: var(--blue); }
-
-  /* ===== FOOTER ===== */
-  footer {
-    text-align: center;
-    padding: 48px 0 32px;
-    border-top: 1px solid var(--border);
-    margin-top: 20px;
-  }
-  footer p {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 400;
-  }
-  footer .logo-text {
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--teal), var(--blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* ===== SCROLL ANIMATIONS ===== */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all .8s cubic-bezier(.16,1,.3,1);
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .reveal-delay-1 { transition-delay: .1s; }
-  .reveal-delay-2 { transition-delay: .2s; }
-  .reveal-delay-3 { transition-delay: .3s; }
-  .reveal-delay-4 { transition-delay: .4s; }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 900px) {
-    .nav-dots { display: none; }
-    header h1 { font-size: 36px; letter-spacing: -1px; }
-    header .subtitle { font-size: 15px; }
-    .stats-bar { gap: 28px; }
-    .stat .number { font-size: 28px; }
-    .understand-layout,
-    .challenges-row,
-    .agents-grid,
-    .synergy-cols { grid-template-columns: 1fr; }
-    .formula-box { padding: 32px 20px; gap: 20px; }
-    .f-desc { max-width: 140px; }
-    .container { padding: 0 20px; }
-    section { margin-bottom: 56px; }
-    header { padding: 56px 0 48px; }
-  }
-
-  @media (max-width: 480px) {
+  @media (max-width:480px) {
     header h1 { font-size: 28px; }
     .stats-bar { flex-direction: column; gap: 20px; }
   }
@@ -836,12 +266,14 @@
     .top-bar-links a { padding: 8px 12px; font-size: 13px; }
     .top-bar-burger { display: flex; }
   }
-
-  /* Offset body content for top bar */
   header { padding-top: 120px !important; }
 </style>
 </head>
 <body>
+
+<canvas id="particle-canvas"></canvas>
+<div class="gradient-bg"></div>
+<div class="grid-bg"></div>
 
 <!-- ===== TOP NAV BAR ===== -->
 <nav class="top-bar" id="topBar">
@@ -851,15 +283,11 @@
   </a>
   <div class="top-bar-links">
     <a href="index.html"><i class="fas fa-layer-group"></i> Home</a>
-    <a href="pdc-agent-vision.html" class="active"><i class="fas fa-robot"></i> PDC + AI</a>
+    <a href="pdc-agent-vision.html"><i class="fas fa-robot"></i> PDC + AI</a>
     <a href="financial-audit-agent-en.html"><i class="fas fa-shield-halved"></i> Audit Agent</a>
   </div>
   <button class="top-bar-burger" id="topBurger" aria-label="Menu"><i class="fas fa-bars"></i></button>
 </nav>
-
-<canvas id="particle-canvas"></canvas>
-<div class="gradient-bg"></div>
-<div class="grid-bg"></div>
 
 <!-- NAV DOTS -->
 <nav class="nav-dots" id="navDots">
@@ -875,20 +303,21 @@
   <!-- ============ HEADER ============ -->
   <header id="header">
     <div class="reveal">
-      <h1>Empowering PDC<br>with Modern AI Agents</h1>
-      <p class="subtitle">Bridging 40 years of rule-based AI and Visual Prolog with the LLM era — a practical roadmap for next-generation intelligent scheduling.</p>
+      <div class="badge"><i class="fas fa-circle"></i> Plain Language Version</div>
+      <h1>How AI Can Help<br>PDC Work Better</h1>
+      <p class="subtitle">PDC has spent ~40 years building smart planning software. I believe adding modern AI agents on top of that foundation can take it to the next level — without breaking what already works.</p>
     </div>
     <div class="reveal reveal-delay-1">
       <div class="stats-bar">
         <div class="stat">
           <div class="number teal" data-count="49">0</div>
           <div class="divider teal"></div>
-          <div class="desc">Countries Trust PDC</div>
+          <div class="desc">Countries Use PDC</div>
         </div>
         <div class="stat">
           <div class="number blue" data-count="37" data-suffix="%">0%</div>
           <div class="divider blue"></div>
-          <div class="desc">World Air Traffic via PDC SCORE</div>
+          <div class="desc">World Air Traffic via PDC</div>
         </div>
         <div class="stat">
           <div class="number purple" data-count="200" data-suffix="K+">0</div>
@@ -911,8 +340,8 @@
         <span class="section-num">01</span>
         <div class="section-line"></div>
       </div>
-      <h2 class="section-title">How I Understand PDC</h2>
-      <p class="section-sub">A 100% Danish-owned, high-tech software house — the invisible brain behind mission-critical scheduling worldwide.</p>
+      <h2 class="section-title">What Is PDC, Really?</h2>
+      <p class="section-sub">A Danish software company that builds the "brain" behind scheduling in airports, hospitals, and more.</p>
     </div>
 
     <div class="understand-layout">
@@ -920,19 +349,19 @@
         <div class="fact-list">
           <div class="fact-item">
             <div class="fi-icon teal"><i class="fa-solid fa-bullseye"></i></div>
-            <div class="fi-text"><strong>Core Mission</strong> — Resource planning & scheduling for industries where plans break every minute. PDC delivers automation and intelligent decision support for time-constrained environments.</div>
+            <div class="fi-text"><strong>What PDC Does</strong> — It makes software that helps plan who works when, which flight lands when, and which gate to use. Think of it as a super-smart calendar that handles complex rules automatically.</div>
           </div>
           <div class="fact-item">
             <div class="fi-icon blue"><i class="fa-solid fa-brain"></i></div>
-            <div class="fi-text"><strong>AI DNA Since Day One</strong> — Owns <strong>Visual Prolog</strong>, the world's most widely used commercial Prolog compiler. Deeply rooted in logical programming, expert systems, heuristic search & constraint solving.</div>
+            <div class="fi-text"><strong>Born with AI</strong> — PDC created <strong>Visual Prolog</strong>, a programming language designed for logical thinking and rule-based problem solving. This has been their secret weapon from day one.</div>
           </div>
           <div class="fact-item">
             <div class="fi-icon purple"><i class="fa-solid fa-diagram-project"></i></div>
-            <div class="fi-text"><strong>Decision Support, Not Just Dashboards</strong> — Real-time inference engine that captures domain expertise and derives corrective actions when schedules become infeasible.</div>
+            <div class="fi-text"><strong>Not Just a Dashboard</strong> — When a plan breaks (someone calls in sick, a flight gets delayed), PDC's engine figures out what to do next and suggests fixes in real time.</div>
           </div>
           <div class="fact-item">
             <div class="fi-icon coral"><i class="fa-solid fa-code-branch"></i></div>
-            <div class="fi-text"><strong>Spin-off AI Assets</strong> — <strong>Dictus</strong> (speech recognition, dialogue systems, speech-to-text) and <strong>ARGOS Ltd</strong> (chemical/nuclear emergency decision support for preparedness & response).</div>
+            <div class="fi-text"><strong>Bonus: Sister Companies</strong> — <strong>Dictus</strong> does speech recognition (talk to the system instead of clicking), and <strong>ARGOS</strong> helps with chemical and nuclear emergency response.</div>
           </div>
         </div>
       </div>
@@ -940,38 +369,38 @@
       <div class="reveal reveal-delay-2">
         <div class="right-stack">
           <div class="card accent-teal">
-            <h3><i class="fa-regular fa-building" style="color:var(--teal)"></i> Industries Served</h3>
+            <h3><i class="fa-regular fa-building" style="color:var(--teal)"></i> Who Uses PDC?</h3>
             <div class="pill-row">
-              <span class="pill p-aviation"><i class="fa-solid fa-plane"></i>&nbsp; Aviation</span>
+              <span class="pill p-aviation"><i class="fa-solid fa-plane"></i>&nbsp; Airlines</span>
               <span class="pill p-aviation">Airports</span>
-              <span class="pill p-health"><i class="fa-solid fa-hospital"></i>&nbsp; Healthcare</span>
+              <span class="pill p-health"><i class="fa-solid fa-hospital"></i>&nbsp; Hospitals</span>
               <span class="pill p-emergency"><i class="fa-solid fa-truck-medical"></i>&nbsp; Emergency</span>
               <span class="pill p-retail"><i class="fa-solid fa-store"></i>&nbsp; Retail</span>
-              <span class="pill p-media"><i class="fa-solid fa-tower-broadcast"></i>&nbsp; Broadcasting</span>
+              <span class="pill p-media"><i class="fa-solid fa-tower-broadcast"></i>&nbsp; Media</span>
               <span class="pill">Ferry</span>
               <span class="pill">Postal</span>
               <span class="pill">Security</span>
             </div>
-            <p class="card-desc">From fleet management & crew scheduling to nurse rostering & ambulance dispatch — PDC powers the invisible backbone of daily operations across 9 industries.</p>
+            <p class="card-desc">From flight schedules to nurse shifts to ambulance dispatch — PDC quietly runs the scheduling behind the scenes across 9 industries.</p>
           </div>
 
           <div class="card accent-blue">
-            <h3><i class="fa-solid fa-cubes" style="color:var(--blue)"></i> Technology Foundation</h3>
+            <h3><i class="fa-solid fa-cubes" style="color:var(--blue)"></i> PDC's Tech Toolbox</h3>
             <div class="tech-row">
               <div class="tech-cell">
                 <div class="tc-icon" style="color:var(--teal)">&#x25A7;</div>
                 <div class="tc-name">Visual Prolog</div>
-                <div class="tc-desc">World's #1 commercial Prolog compiler</div>
+                <div class="tc-desc">Smart logic language</div>
               </div>
               <div class="tech-cell">
                 <div class="tc-icon" style="color:var(--blue)">&#x2699;</div>
-                <div class="tc-name">Constraint Solver</div>
-                <div class="tc-desc">Heuristic search + rule engine</div>
+                <div class="tc-name">Rule Engine</div>
+                <div class="tc-desc">Handles complex constraints</div>
               </div>
               <div class="tech-cell">
                 <div class="tc-icon" style="color:var(--purple)"><i class="fa-solid fa-network-wired"></i></div>
-                <div class="tc-name">Expert Systems</div>
-                <div class="tc-desc">Knowledge-based inference</div>
+                <div class="tc-name">Expert System</div>
+                <div class="tc-desc">Learns domain knowledge</div>
               </div>
             </div>
           </div>
@@ -987,29 +416,29 @@
         <span class="section-num">02</span>
         <div class="section-line"></div>
       </div>
-      <h2 class="section-title">The Core Challenges</h2>
-      <p class="section-sub">Three pain points that make scheduling in aviation, healthcare & emergency services a true engineering problem.</p>
+      <h2 class="section-title">What's Hard About Scheduling?</h2>
+      <p class="section-sub">Three big headaches that make scheduling way more difficult than it sounds.</p>
     </div>
 
     <div class="challenges-row">
       <div class="challenge-card c-coral reveal reveal-delay-1">
         <div class="cc-icon coral"><i class="fa-solid fa-bolt"></i></div>
-        <h3>Dynamic Disruption</h3>
-        <p>Weather, delays, sick leave, equipment failure — plans break in real-time. PDC's customers operate where a feasible schedule at 8 AM is <strong>infeasible by 9 AM</strong>.<br><br><strong>The cost of slow recovery:</strong> grounded aircraft, unpaid crew, patient safety risks, lost revenue.</p>
+        <h3>Things Break All the Time</h3>
+        <p>Bad weather, sick staff, equipment failure — a schedule that works at 8 AM can be useless by 9 AM. The longer it takes to fix, the more money and safety are at risk.<br><br><strong>For example:</strong> a delayed flight means the crew can't make the next one, the gate is occupied, and connecting passengers miss their flights.</p>
         <span class="cc-tag coral">Real-Time</span>
       </div>
 
       <div class="challenge-card c-purple reveal reveal-delay-2">
         <div class="cc-icon purple"><i class="fa-solid fa-list-check"></i></div>
-        <h3>Thousands of Dead Rules</h3>
-        <p>Crew flight-time limits, hospital union contracts, airport slot regulations, ambulance response-time mandates — each industry carries its own <strong>constraint labyrinth</strong>, and rules change constantly.<br><br><strong>The gap:</strong> PDC's rule engine captures them, but maintaining & evolving the knowledge base remains manual-heavy.</p>
+        <h3>Too Many Rules</h3>
+        <p>Every industry has a mountain of rules: flight-time limits, union contracts, airport slot rules, response-time requirements. PDC's engine handles them, but keeping all those rules updated is still a lot of manual work.<br><br><strong>The gap:</strong> the system is smart, but someone still has to feed it new rules by hand.</p>
         <span class="cc-tag purple">Complexity</span>
       </div>
 
       <div class="challenge-card c-teal reveal reveal-delay-3">
         <div class="cc-icon teal"><i class="fa-solid fa-user-gear"></i></div>
-        <h3>Steep Learning Curve</h3>
-        <p>Dispatchers, operations controllers and roster managers spend years mastering PDC's interfaces. The power is there — but <strong>the cognitive load is high</strong>.<br><br><strong>The missed opportunity:</strong> every minute spent navigating UIs is a minute not making strategic decisions.</p>
+        <h3>Hard to Learn</h3>
+        <p>PDC's software is powerful — but it takes years of practice to master. New dispatchers and managers face a steep learning curve, and every minute spent clicking through menus is a minute not solving real problems.<br><br><strong>The missed opportunity:</strong> the power is there, but it's locked behind a complex interface.</p>
         <span class="cc-tag teal">Usability</span>
       </div>
     </div>
@@ -1022,8 +451,8 @@
         <span class="section-num">03</span>
         <div class="section-line"></div>
       </div>
-      <h2 class="section-title">The AI Agent Solution</h2>
-      <p class="section-sub">Modern LLM agents don't replace Visual Prolog's deep logic — they wrap it with perception, negotiation & natural interaction.</p>
+      <h2 class="section-title">My Proposed AI Solutions</h2>
+      <p class="section-sub">Four AI agents that build on top of PDC's existing engine — not replace it.</p>
     </div>
 
     <div class="agents-grid">
@@ -1034,26 +463,26 @@
         <div class="a-head">
           <div class="a-icon ai-teal"><i class="fa-solid fa-rotate"></i></div>
           <div class="a-info">
-            <h3>Disruption Recovery Agent</h3>
-            <div class="a-sub">Auto-Detect &middot; Reason &middot; Replan</div>
+            <h3>Auto-Fix Agent</h3>
+            <div class="a-sub">Detect &middot; Think &middot; Fix</div>
           </div>
         </div>
-        <p class="a-desc">A monitoring agent connected to PDC's AODB / Ops systems. Detects deviations in real-time, autonomously triggers the constraint solver for optimal recovery, and presents options to the human dispatcher for one-click approval.</p>
+        <p class="a-desc">Watches the system in real time. When something goes wrong (delay, cancellation), it automatically checks all the rules and suggests the best fix. The human dispatcher just reviews and clicks "approve."</p>
         <div class="flow-line">
-          <span class="flow-box fb-trigger">Delay Detected</span>
+          <span class="flow-box fb-trigger">Something Breaks</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-reason">Constraint Check</span>
+          <span class="flow-box fb-reason">Check Rules</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-action">Suggest Replan</span>
+          <span class="flow-box fb-action">Suggest Fix</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-feedback">Human Approves</span>
+          <span class="flow-box fb-feedback">Human Says Yes</span>
         </div>
         <ul class="a-details">
-          <li class="t">Cuts recovery time from <strong>~30 min to ~2 min</strong></li>
-          <li class="t">Respects all regulatory & contract constraints</li>
-          <li class="t">Learns from repeated dispatcher overrides over time</li>
+          <li class="t">Cuts fix time from <strong>~30 min to ~2 min</strong></li>
+          <li class="t">Always follows the rules — no shortcuts</li>
+          <li class="t">Gets smarter over time by learning from human choices</li>
         </ul>
-        <span class="a-tag teal">Highest Impact</span>
+        <span class="a-tag teal">Biggest Impact</span>
       </div>
 
       <!-- AGENT 2: DEMAND PREDICTION -->
@@ -1062,24 +491,24 @@
         <div class="a-head">
           <div class="a-icon ai-blue"><i class="fa-solid fa-chart-line"></i></div>
           <div class="a-info">
-            <h3>Demand Prediction Agent</h3>
-            <div class="a-sub">Forecast &middot; Pre-Position &middot; Optimize</div>
+            <h3>Crystal Ball Agent</h3>
+            <div class="a-sub">Predict &middot; Prepare &middot; Optimize</div>
           </div>
         </div>
-        <p class="a-desc">An ML-powered agent analyzing historical patterns — flight delays, emergency call volumes, retail footfall — to predict resource demand ahead of time. Feeds anticipatory constraints into the scheduler before disruptions hit.</p>
+        <p class="a-desc">Studies past patterns — when delays usually happen, how many emergency calls come in on a Monday, how many shoppers show up at 3 PM. Then it helps plan ahead so problems get prevented instead of just fixed.</p>
         <div class="flow-line">
-          <span class="flow-box fb-trigger">Historical Data</span>
+          <span class="flow-box fb-trigger">Past Data</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-blue">ML Forecast</span>
+          <span class="flow-box fb-blue">Make Prediction</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-action">Pre-Optimize Plan</span>
+          <span class="flow-box fb-action">Adjust Plan Early</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-cyan">Proactive Buffer</span>
+          <span class="flow-box fb-cyan">Problem Avoided</span>
         </div>
         <ul class="a-details">
-          <li class="b">Shifts from <strong>reactive to proactive</strong> scheduling</li>
-          <li class="b">Reduces overtime & last-minute scrambling</li>
-          <li class="b">Self-improves as more operational data flows in</li>
+          <li class="b">Changes the game from <strong>reactive to proactive</strong></li>
+          <li class="b">Less overtime, fewer last-minute panics</li>
+          <li class="b">Keeps improving as it sees more data</li>
         </ul>
         <span class="a-tag blue">Predictive</span>
       </div>
@@ -1090,26 +519,26 @@
         <div class="a-head">
           <div class="a-icon ai-purple"><i class="fa-solid fa-handshake"></i></div>
           <div class="a-info">
-            <h3>Multi-Agent Negotiator</h3>
-            <div class="a-sub">Distributed Constraints &middot; Trade-Off</div>
+            <h3>Team Negotiator</h3>
+            <div class="a-sub">Balance &middot; Trade-Off &middot; Agree</div>
           </div>
         </div>
-        <p class="a-desc">Specialized agents — each representing one stakeholder (crew, fleet, ground ops, maintenance, revenue) — negotiate optimal compromises when conflicting constraints arise. A mediator agent finds the global optimum.</p>
+        <p class="a-desc">When different teams want different things — crew needs rest, but the airline wants the flight to depart — multiple mini-agents each argue for their team, and a "judge" agent finds the best overall compromise.</p>
         <div class="flow-line">
-          <span class="flow-box fb-trigger">Conflict Event</span>
+          <span class="flow-box fb-trigger">Conflict!</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
           <span class="flow-box fb-reason">Crew Agent</span>
           <span class="flow-box fb-blue">Fleet Agent</span>
           <span class="flow-box fb-cyan">Ops Agent</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-action">Optimal Trade-Off</span>
+          <span class="flow-box fb-action">Best Deal</span>
         </div>
         <ul class="a-details">
-          <li class="p">Solves <strong>distributed constraint optimization</strong> at scale</li>
-          <li class="p">Mimics real-world stakeholder negotiation (but faster)</li>
-          <li class="p">Naturally aligns with PDC's multi-domain scheduling</li>
+          <li class="p">Like real meetings — but <strong>in seconds, not hours</strong></li>
+          <li class="p">Finds solutions humans might miss</li>
+          <li class="p">Works naturally with PDC's multi-industry setup</li>
         </ul>
-        <span class="a-tag purple">Most Innovative</span>
+        <span class="a-tag purple">Most Creative</span>
       </div>
 
       <!-- AGENT 4: CONVERSATIONAL INTERFACE -->
@@ -1118,24 +547,24 @@
         <div class="a-head">
           <div class="a-icon ai-coral"><i class="fa-solid fa-message"></i></div>
           <div class="a-info">
-            <h3>Conversational Interface Agent</h3>
-            <div class="a-sub">Natural Language &middot; Intent Parse &middot; Act</div>
+            <h3>Chat Assistant</h3>
+            <div class="a-sub">Talk &middot; Understand &middot; Do</div>
           </div>
         </div>
-        <p class="a-desc">An LLM-powered layer that lets dispatchers, managers and crew speak (or type) in plain language. Translates intent into structured queries, invokes the Prolog inference engine behind the scenes, and returns human-readable answers.</p>
+        <p class="a-desc">Instead of clicking through complex menus, users just type or speak what they want. The AI understands the request, checks the rules behind the scenes, and gets it done. Powered by Dictus's speech tech.</p>
         <div class="flow-line">
-          <span class="flow-box fb-trigger">"Reschedule Jane's shift to Mon"</span>
+          <span class="flow-box fb-trigger">"Move Jane to Monday"</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-reason">Intent Parse</span>
+          <span class="flow-box fb-reason">Understand Intent</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-action">Rule Check</span>
+          <span class="flow-box fb-action">Check Rules</span>
           <i class="fa-solid fa-arrow-right flow-arrow"></i>
-          <span class="flow-box fb-feedback">"Done. One conflict found..."</span>
+          <span class="flow-box fb-feedback">"Done. One issue..."</span>
         </div>
         <ul class="a-details">
-          <li class="c">Dramatically <strong>lowers the learning curve</strong> for new operators</li>
-          <li class="c">Leverages Dictus's speech tech for voice commands</li>
-          <li class="c">Makes PDC's power accessible to non-expert users</li>
+          <li class="c"><strong>Anyone can use it</strong> — no more months of training</li>
+          <li class="c">Works with voice commands (Dictus tech)</li>
+          <li class="c">Unlocks PDC's power for non-expert users</li>
         </ul>
         <span class="a-tag coral">User-Facing</span>
       </div>
@@ -1150,31 +579,31 @@
         <span class="section-num">04</span>
         <div class="section-line"></div>
       </div>
-      <h2 class="section-title">The Synergy</h2>
-      <p class="section-sub">Visual Prolog and LLM agents are not competing technologies — they are complementary. The formula is simple.</p>
+      <h2 class="section-title">Why This Works Together</h2>
+      <p class="section-sub">PDC's existing engine and AI agents aren't rivals — they're a team. The formula is simple.</p>
     </div>
 
     <div class="reveal reveal-delay-1">
       <div class="formula-box">
         <div class="f-item">
           <div class="f-icon" style="color:var(--teal)">&#x25A7;</div>
-          <div class="f-label">Foundation</div>
-          <div class="f-title teal">Visual Prolog</div>
-          <div class="f-desc">Deep logical reasoning &middot; Constraint satisfaction &middot; Deterministic & provable</div>
+          <div class="f-label">The Foundation</div>
+          <div class="f-title teal">PDC's Engine</div>
+          <div class="f-desc">Logical thinking &middot; Rule checking &middot; Reliable & provable</div>
         </div>
         <div class="f-op">+</div>
         <div class="f-item">
           <div class="f-icon" style="color:var(--blue)"><i class="fa-solid fa-robot"></i></div>
-          <div class="f-label">Amplifier</div>
-          <div class="f-title blue">LLM Agents</div>
-          <div class="f-desc">Flexible perception &middot; Natural language &middot; Learning & adaptation</div>
+          <div class="f-label">The Upgrade</div>
+          <div class="f-title blue">AI Agents</div>
+          <div class="f-desc">Reads events &middot; Understands language &middot; Learns over time</div>
         </div>
         <div class="f-op eq">=</div>
         <div class="f-item">
           <div class="f-icon"><i class="fa-solid fa-bolt" style="color:var(--teal)"></i></div>
-          <div class="f-label">Outcome</div>
-          <div class="f-title gradient">The Future of Scheduling</div>
-          <div class="f-desc">Intelligent, adaptive, human-centered planning at global scale</div>
+          <div class="f-label">The Result</div>
+          <div class="f-title gradient">Smarter Scheduling</div>
+          <div class="f-desc">Fast, adaptive, easy to use — at global scale</div>
         </div>
       </div>
     </div>
@@ -1182,23 +611,23 @@
     <div class="reveal reveal-delay-2">
       <div class="synergy-cols">
         <div class="syn-col left">
-          <h4><i class="fa-solid fa-circle-check"></i> What PDC Already Has (Don't Break It)</h4>
+          <h4><i class="fa-solid fa-circle-check"></i> What PDC Already Has (Keep It!)</h4>
           <ul>
-            <li>40 years of battle-tested constraint solver logic</li>
-            <li>Visual Prolog — deterministic, debuggable, provably correct</li>
-            <li>Deep domain models for aviation, healthcare, emergency ops</li>
-            <li>37% global air traffic under management — trust at scale</li>
-            <li>Dictus speech tech & ARGOS emergency AI — in-house assets ready to connect</li>
+            <li>~40 years of proven, reliable planning logic</li>
+            <li>Visual Prolog — predictable and debuggable</li>
+            <li>Deep knowledge of aviation, healthcare, emergencies</li>
+            <li>37% of global air traffic — trusted at scale</li>
+            <li>Dictus speech tech & ARGOS emergency AI ready to plug in</li>
           </ul>
         </div>
         <div class="syn-col right">
-          <h4><i class="fa-solid fa-rocket"></i> What LLM Agents Add (Augment, Don't Replace)</h4>
+          <h4><i class="fa-solid fa-rocket"></i> What AI Agents Add (On Top, Not Instead)</h4>
           <ul>
-            <li>Real-time situational awareness via multimodal event streams</li>
-            <li>Natural language interface — PDC's power without the UI complexity</li>
-            <li>Multi-agent negotiation for distributed constraint optimization</li>
-            <li>Self-improving knowledge base — learn from dispatcher decisions</li>
-            <li>Predictive horizon — anticipate disruptions before they cascade</li>
+            <li>Keeps an eye on everything in real time</li>
+            <li>Chat interface — use PDC's power without learning complex menus</li>
+            <li>Multiple agents negotiate trade-offs like a human team would</li>
+            <li>Self-improving — learns from every decision made</li>
+            <li>Sees problems coming before they snowball</li>
           </ul>
         </div>
       </div>
@@ -1208,13 +637,13 @@
   <!-- ============ FOOTER ============ -->
   <footer>
     <div class="logo-text">PDC + AI AGENTS</div>
-    <p>Every claim grounded in PDC's real technology & market position. Research-driven, not marketing-driven.</p>
+    <p>Every number comes from PDC's own website and public data. This is research, not marketing.</p>
   </footer>
 
 </div>
 
 <script>
-// ===== PARTICLE NETWORK BACKGROUND (Light Theme) =====
+// ===== PARTICLE NETWORK BACKGROUND =====
 (function() {
   const canvas = document.getElementById('particle-canvas');
   const ctx = canvas.getContext('2d');
